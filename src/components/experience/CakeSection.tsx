@@ -25,6 +25,8 @@ export function CakeSection({
   birthdayVideoSrc,
 }: CakeSectionProps) {
   const [isCelebrating, setIsCelebrating] = useState(false);
+  const [hasStartedVideo, setHasStartedVideo] = useState(false);
+  const [showCelebrationOverlay, setShowCelebrationOverlay] = useState(false);
   const isClient = useIsClient();
   const [burstKey, setBurstKey] = useState(0);
   const [hasVideoError, setHasVideoError] = useState(false);
@@ -58,6 +60,15 @@ export function CakeSection({
     return () => window.clearTimeout(timeout);
   }, [isCelebrating, isClient]);
 
+  useEffect(() => {
+    if (!isClient || !showCelebrationOverlay) {
+      return undefined;
+    }
+
+    const timeout = window.setTimeout(() => setShowCelebrationOverlay(false), 2400);
+    return () => window.clearTimeout(timeout);
+  }, [isClient, showCelebrationOverlay]);
+
   const eyebrow = cakeText.eyebrow ?? "make a wish";
   const heading =
     cakeText.heading ?? "A tiny celebration for the most beautiful soul I know.";
@@ -67,6 +78,8 @@ export function CakeSection({
     "Made with all my love ❤️",
   ];
   const videoSrc = birthdayVideoSrc ?? "/birthday.mp4";
+  celebrationLines[0] = "Happy Birthday to you \u{1F389}";
+  celebrationLines[1] = "Made with all my love \u2764\uFE0F";
 
   function handleCakeCut() {
     if (!isClient) {
@@ -96,7 +109,9 @@ export function CakeSection({
     }
 
     setBurstKey((currentValue) => currentValue + 1);
+    setHasStartedVideo(true);
     setIsCelebrating(true);
+    setShowCelebrationOverlay(true);
   }
 
   return (
@@ -186,6 +201,8 @@ export function CakeSection({
 
                   videoElement.pause();
                   videoElement.currentTime = 0;
+                  setHasStartedVideo(false);
+                  setShowCelebrationOverlay(false);
                 }}
                 onError={() => setHasVideoError(true)}
               />
@@ -203,16 +220,16 @@ export function CakeSection({
 
             <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-black/5 to-transparent" />
             <AnimatePresence mode="wait">
-              {!isCelebrating ? (
+              {!hasStartedVideo && !showCelebrationOverlay ? (
                 <motion.div
                   key="video-caption"
                   animate={{ opacity: 1, y: 0 }}
-                  className="absolute inset-x-0 bottom-0 z-10 p-4 sm:p-5"
+                  className="absolute inset-x-0 bottom-4 z-10 flex justify-center px-4"
                   exit={{ opacity: 0, y: 18 }}
                   initial={{ opacity: 0, y: 18 }}
                   transition={{ duration: 0.35, ease: "easeOut" }}
                 >
-                  <div className="rounded-[1.4rem] border border-white/10 bg-black/20 p-4 text-left backdrop-blur-xl">
+                  <div className="mx-auto w-full max-w-[90%] rounded-[1.4rem] border border-white/10 bg-black/20 p-4 text-left backdrop-blur-sm">
                     <p className="font-display text-2xl text-white sm:text-3xl">
                       {cakeText.videoTitle ?? "A little birthday film for you"}
                     </p>
@@ -222,16 +239,16 @@ export function CakeSection({
                     </p>
                   </div>
                 </motion.div>
-              ) : (
+              ) : showCelebrationOverlay ? (
                 <motion.div
                   key="video-message"
                   animate={{ opacity: 1, scale: 1, y: 0 }}
-                  className="absolute inset-0 z-10 flex items-center justify-center px-6 text-center"
+                  className="absolute inset-x-0 bottom-4 z-10 flex justify-center px-4 text-center"
                   exit={{ opacity: 0, scale: 0.96 }}
-                  initial={{ opacity: 0, scale: 0.94, y: 10 }}
+                  initial={{ opacity: 0, scale: 0.94, y: 12 }}
                   transition={{ duration: 0.3, ease: "easeOut" }}
                 >
-                  <div className="rounded-[1.6rem] border border-white/10 bg-black/20 px-6 py-5 backdrop-blur-md">
+                  <div className="mx-auto w-full max-w-[90%] rounded-[1.6rem] border border-white/10 bg-black/20 px-6 py-5 backdrop-blur-sm">
                     {celebrationLines.map((line, index) => (
                       <motion.p
                         key={`${line}-${index}`}
@@ -250,7 +267,7 @@ export function CakeSection({
                     ))}
                   </div>
                 </motion.div>
-              )}
+              ) : null}
             </AnimatePresence>
           </div>
         </motion.div>

@@ -13,7 +13,7 @@ type FunnySectionProps = {
 export function FunnySection({ funnyImages }: FunnySectionProps) {
   return (
     <motion.div
-      className="flex w-full max-w-full flex-col items-center overflow-hidden text-center"
+      className="flex w-full max-w-full flex-col items-center overflow-hidden px-4 text-center"
       initial="hidden"
       variants={staggerContainer}
       viewport={sectionViewport}
@@ -41,7 +41,7 @@ export function FunnySection({ funnyImages }: FunnySectionProps) {
       </motion.p>
 
       <motion.div
-        className="mt-8 w-full max-w-full overflow-hidden [&>div]:grid-cols-1 [&>div]:gap-4 [&>div]:sm:grid-cols-2 [&>div]:lg:grid-cols-3"
+        className="mt-8 w-full max-w-full overflow-hidden [&>div]:grid [&>div]:w-full [&>div]:max-w-full [&>div]:overflow-hidden [&>div]:grid-cols-1 [&>div]:gap-4 [&>div]:sm:grid-cols-2 [&>div]:lg:grid-cols-3 [&>div>*]:h-full [&>div>*]:w-full [&>div>*]:overflow-hidden [&_img]:h-full [&_img]:w-full [&_img]:rounded-xl [&_img]:object-cover"
         variants={fadeUp}
       >
         <PhotoGrid items={funnyImages} />
