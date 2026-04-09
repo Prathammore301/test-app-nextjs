@@ -16,7 +16,7 @@ export function SectionWrapper({
   return (
     <section
       id={id}
-      className={`relative flex min-h-svh items-center justify-center overflow-hidden px-5 py-12 sm:px-8 ${className ?? ""}`}
+      className={`relative flex min-h-svh scroll-mt-16 items-center justify-center overflow-hidden px-4 py-10 sm:px-6 sm:py-12 lg:px-8 ${className ?? ""}`}
     >
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute left-[-10%] top-12 h-40 w-40 rounded-full bg-pink-400/[0.18] blur-3xl sm:h-56 sm:w-56" />
@@ -25,7 +25,7 @@ export function SectionWrapper({
       </div>
 
       <div
-        className={`soft-glow relative z-10 w-full max-w-2xl rounded-[2rem] border border-white/10 bg-white/[0.06] p-6 backdrop-blur-xl sm:p-10 ${panelClassName ?? ""}`}
+        className={`soft-glow relative z-10 mx-auto w-full max-w-2xl rounded-[1.75rem] border border-white/10 bg-white/[0.06] p-5 backdrop-blur-xl sm:rounded-[2rem] sm:p-8 lg:p-10 ${panelClassName ?? ""}`}
       >
         {children}
       </div>

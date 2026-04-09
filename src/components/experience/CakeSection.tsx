@@ -1,59 +1,140 @@
 "use client";
 
+import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { cakeText } from "@/data/content";
+import { CakeFireworks } from "./CakeFireworks";
 import { ConfettiBurst } from "./ConfettiBurst";
-import { fadeScale, fadeUp, sectionViewport, sharedEase, staggerContainer } from "./motion";
+import {
+  fadeScale,
+  fadeUp,
+  sectionViewport,
+  sharedEase,
+  staggerContainer,
+} from "./motion";
+import { useIsClient } from "./use-is-client";
 
-export function CakeSection() {
+type CakeSectionProps = {
+  birthdayPosterSrc: string;
+  birthdayVideoSrc?: string | null;
+};
+
+export function CakeSection({
+  birthdayPosterSrc,
+  birthdayVideoSrc,
+}: CakeSectionProps) {
   const [isCelebrating, setIsCelebrating] = useState(false);
+  const isClient = useIsClient();
   const [burstKey, setBurstKey] = useState(0);
+  const [hasVideoError, setHasVideoError] = useState(false);
+  const cakeAudioRef = useRef<HTMLAudioElement | null>(null);
+  const fireworksAudioRef = useRef<HTMLAudioElement | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
 
   useEffect(() => {
-    if (!isCelebrating) {
+    if (!isClient) {
       return undefined;
     }
 
-    const timeout = window.setTimeout(() => setIsCelebrating(false), 1800);
+    const cakeAudio = cakeAudioRef.current;
+    const fireworksAudio = fireworksAudioRef.current;
+
+    if (cakeAudio) {
+      cakeAudio.volume = 0.34;
+    }
+
+    if (fireworksAudio) {
+      fireworksAudio.volume = 0.42;
+    }
+  }, [isClient]);
+
+  useEffect(() => {
+    if (!isClient || !isCelebrating) {
+      return undefined;
+    }
+
+    const timeout = window.setTimeout(() => setIsCelebrating(false), 2000);
     return () => window.clearTimeout(timeout);
-  }, [isCelebrating]);
+  }, [isCelebrating, isClient]);
+
+  const eyebrow = cakeText.eyebrow ?? "make a wish";
+  const heading =
+    cakeText.heading ?? "A tiny celebration for the most beautiful soul I know.";
+  const buttonLabel = cakeText.buttonLabel ?? "Cut the Cake";
+  const celebrationLines = [
+    "Happy Birthday to you 🎉",
+    "Made with all my love ❤️",
+  ];
+  const videoSrc = birthdayVideoSrc ?? "/birthday.mp4";
 
   function handleCakeCut() {
+    if (!isClient) {
+      return;
+    }
+
+    if (typeof navigator !== "undefined" && "vibrate" in navigator) {
+      navigator.vibrate([18, 12, 26]);
+    }
+
+    if (fireworksAudioRef.current) {
+      fireworksAudioRef.current.currentTime = 0;
+      void fireworksAudioRef.current.play().catch(() => {});
+    }
+
+    if (cakeAudioRef.current) {
+      cakeAudioRef.current.currentTime = 0;
+      window.setTimeout(() => {
+        void cakeAudioRef.current?.play().catch(() => {});
+      }, 120);
+    }
+
+    if (videoRef.current) {
+      videoRef.current.muted = true;
+      videoRef.current.currentTime = 0;
+      void videoRef.current.play().catch(() => {});
+    }
+
     setBurstKey((currentValue) => currentValue + 1);
     setIsCelebrating(true);
   }
 
   return (
     <motion.div
-      className="flex flex-col items-center text-center"
+      className="flex w-full flex-col items-center text-center"
       initial="hidden"
       variants={staggerContainer}
       viewport={sectionViewport}
       whileInView="visible"
     >
+      {isClient ? <audio ref={cakeAudioRef} preload="auto" src="/cake.mp3" /> : null}
+      {isClient ? (
+        <audio ref={fireworksAudioRef} preload="auto" src="/fireworks.mp3" />
+      ) : null}
+
       <motion.span
         className="mb-4 text-[0.7rem] uppercase tracking-[0.35em] text-pink-100/60"
         variants={fadeUp}
       >
-        {cakeText.eyebrow}
+        {eyebrow}
       </motion.span>
 
       <motion.h2
-        className="max-w-md font-display text-4xl tracking-tight text-white sm:text-5xl"
+        className="max-w-xl text-balance font-display text-4xl tracking-tight text-white sm:text-5xl"
         variants={fadeUp}
       >
-        {cakeText.heading}
+        {heading}
       </motion.h2>
 
-      <motion.div className="relative mt-10" variants={fadeScale}>
+      <motion.div className="relative mt-10 w-full" variants={fadeScale}>
+        <CakeFireworks active={isCelebrating} />
         <ConfettiBurst active={isCelebrating} burstKey={burstKey} />
 
         <AnimatePresence>
           {isCelebrating ? (
             <motion.div
               animate={{ opacity: 1, scale: 1 }}
-              className="absolute inset-6 rounded-full bg-fuchsia-300/20 blur-3xl"
+              className="absolute inset-6 rounded-[2rem] bg-fuchsia-300/20 blur-3xl"
               exit={{ opacity: 0 }}
               initial={{ opacity: 0, scale: 0.8 }}
             />
@@ -63,68 +144,114 @@ export function CakeSection() {
         <motion.div
           animate={
             isCelebrating
-              ? { scale: [1, 1.08, 1.02], y: [0, -10, 0] }
-              : { y: [0, -6, 0] }
+              ? { scale: [1, 1.02, 1], y: [0, -8, 0] }
+              : { y: [0, -4, 0] }
           }
-          className="relative h-[19rem] w-[16rem]"
+          className="relative mx-auto w-full max-w-full overflow-hidden rounded-xl border border-white/10 bg-white/[0.05] shadow-[0_20px_70px_rgba(214,99,255,0.18)] sm:max-w-2xl"
           transition={
             isCelebrating
               ? { duration: 1.15, ease: sharedEase }
               : { duration: 3.6, ease: "easeInOut", repeat: Infinity }
           }
         >
-          <div className="absolute bottom-2 left-1/2 h-6 w-52 -translate-x-1/2 rounded-full bg-pink-200/[0.15] blur-xl" />
-          <div className="absolute bottom-4 left-1/2 h-3 w-44 -translate-x-1/2 rounded-full bg-white/35" />
-
-          <div className="absolute bottom-7 left-1/2 flex -translate-x-1/2 flex-col items-center">
-            <div className="relative mb-2 h-14 w-36">
-              <div className="absolute bottom-0 left-[28%] h-10 w-2 -translate-x-1/2 rounded-full bg-white/80" />
-              <div className="absolute bottom-0 left-1/2 h-11 w-2 -translate-x-1/2 rounded-full bg-white/80" />
-              <div className="absolute bottom-0 left-[72%] h-10 w-2 -translate-x-1/2 rounded-full bg-white/80" />
-
-              {[0, 1, 2].map((index) => (
-                <motion.span
-                  key={index}
-                  animate={{
-                    opacity: [0.8, 1, 0.75],
-                    scale: [0.92, 1.08, 0.96],
-                    y: [0, -3, 0],
-                  }}
-                  className="absolute h-4 w-3 rounded-full bg-[linear-gradient(180deg,#fff7b8_0%,#ff9f40_100%)]"
-                  style={{
-                    left: `${28 + index * 22}%`,
-                    top: 0,
-                  }}
-                  transition={{
-                    delay: index * 0.12,
-                    duration: 1,
-                    ease: "easeInOut",
-                    repeat: Infinity,
-                  }}
+          <div className="relative aspect-video w-full overflow-hidden rounded-xl bg-[#110917]">
+            <AnimatePresence>
+              {isCelebrating ? (
+                <motion.div
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="pointer-events-none absolute inset-3 z-10 rounded-xl border border-pink-200/20 shadow-[0_0_28px_rgba(255,151,216,0.18)]"
+                  exit={{ opacity: 0, scale: 0.96 }}
+                  initial={{ opacity: 0, scale: 0.94 }}
                 />
-              ))}
-            </div>
+              ) : null}
+            </AnimatePresence>
 
-            <div className="relative h-14 w-40 rounded-[1.6rem] border border-white/[0.15] bg-[linear-gradient(180deg,#ffe1f4_0%,#f6a9d6_100%)]">
-              <div className="absolute inset-x-3 top-2 h-3 rounded-full bg-white/55" />
-              <div className="absolute left-5 top-4 h-7 w-3 rounded-b-full bg-white/70" />
-              <div className="absolute left-1/2 top-4 h-8 w-4 -translate-x-1/2 rounded-b-full bg-white/70" />
-              <div className="absolute right-6 top-4 h-6 w-3 rounded-b-full bg-white/70" />
-            </div>
+            {!hasVideoError ? (
+              <video
+                ref={videoRef}
+                className="h-full w-full bg-[#110917] object-contain"
+                controls={false}
+                loop={false}
+                muted
+                playsInline
+                poster={birthdayPosterSrc}
+                preload="metadata"
+                src={videoSrc}
+                onEnded={() => {
+                  const videoElement = videoRef.current;
 
-            <div className="relative -mt-2 h-16 w-48 rounded-[1.8rem] border border-white/[0.15] bg-[linear-gradient(180deg,#f6b2ea_0%,#de80d6_100%)]">
-              <div className="absolute inset-x-4 top-2 h-4 rounded-full bg-white/52" />
-              <div className="absolute left-6 top-4 h-8 w-4 rounded-b-full bg-white/68" />
-              <div className="absolute left-1/2 top-4 h-9 w-4 -translate-x-1/2 rounded-b-full bg-white/68" />
-              <div className="absolute right-7 top-4 h-7 w-3 rounded-b-full bg-white/68" />
-            </div>
+                  if (!videoElement) {
+                    return;
+                  }
 
-            <div className="relative -mt-2 h-[4.5rem] w-56 rounded-[2rem] border border-white/[0.15] bg-[linear-gradient(180deg,#d86fd0_0%,#9450d2_100%)]">
-              <div className="absolute inset-x-5 top-3 h-4 rounded-full bg-white/45" />
-              <div className="absolute left-9 top-5 h-9 w-4 rounded-b-full bg-white/58" />
-              <div className="absolute left-1/2 top-5 h-10 w-5 -translate-x-1/2 rounded-b-full bg-white/58" />
-              <div className="absolute right-9 top-5 h-8 w-4 rounded-b-full bg-white/58" />
-            </div>
+                  videoElement.pause();
+                  videoElement.currentTime = 0;
+                }}
+                onError={() => setHasVideoError(true)}
+              />
+            ) : (
+              <div className="relative h-full w-full">
+                <Image
+                  alt={cakeText.videoTitle ?? "Birthday preview"}
+                  className="object-contain"
+                  fill
+                  sizes="(max-width: 640px) 88vw, (max-width: 1024px) 70vw, 720px"
+                  src={birthdayPosterSrc}
+                />
+              </div>
+            )}
+
+            <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-black/5 to-transparent" />
+            <AnimatePresence mode="wait">
+              {!isCelebrating ? (
+                <motion.div
+                  key="video-caption"
+                  animate={{ opacity: 1, y: 0 }}
+                  className="absolute inset-x-0 bottom-0 z-10 p-4 sm:p-5"
+                  exit={{ opacity: 0, y: 18 }}
+                  initial={{ opacity: 0, y: 18 }}
+                  transition={{ duration: 0.35, ease: "easeOut" }}
+                >
+                  <div className="rounded-[1.4rem] border border-white/10 bg-black/20 p-4 text-left backdrop-blur-xl">
+                    <p className="font-display text-2xl text-white sm:text-3xl">
+                      {cakeText.videoTitle ?? "A little birthday film for you"}
+                    </p>
+                    <p className="mt-1 text-sm leading-6 text-white/[0.72]">
+                      {cakeText.videoSubtitle ??
+                        "A soft little keepsake for your day. Press play and smile."}
+                    </p>
+                  </div>
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="video-message"
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  className="absolute inset-0 z-10 flex items-center justify-center px-6 text-center"
+                  exit={{ opacity: 0, scale: 0.96 }}
+                  initial={{ opacity: 0, scale: 0.94, y: 10 }}
+                  transition={{ duration: 0.3, ease: "easeOut" }}
+                >
+                  <div className="rounded-[1.6rem] border border-white/10 bg-black/20 px-6 py-5 backdrop-blur-md">
+                    {celebrationLines.map((line, index) => (
+                      <motion.p
+                        key={`${line}-${index}`}
+                        animate={{ opacity: [0.72, 1, 0.82], y: [0, -2, 0] }}
+                        className="glow-text font-display text-3xl leading-tight text-white sm:text-4xl"
+                        transition={{
+                          delay: index * 0.12,
+                          duration: 1.1,
+                          ease: "easeInOut",
+                          repeat: 1,
+                          repeatType: "mirror",
+                        }}
+                      >
+                        {line}
+                      </motion.p>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </motion.div>
       </motion.div>
@@ -137,21 +264,8 @@ export function CakeSection() {
         whileHover={{ scale: 1.03 }}
         whileTap={{ scale: 0.98 }}
       >
-        {cakeText.buttonLabel}
+        {buttonLabel}
       </motion.button>
-
-      <AnimatePresence>
-        {isCelebrating ? (
-          <motion.p
-            animate={{ opacity: 1, y: 0 }}
-            className="mt-4 text-sm text-pink-100/75"
-            exit={{ opacity: 0, y: 10 }}
-            initial={{ opacity: 0, y: 12 }}
-          >
-            {cakeText.celebrationNote}
-          </motion.p>
-        ) : null}
-      </AnimatePresence>
     </motion.div>
   );
 }

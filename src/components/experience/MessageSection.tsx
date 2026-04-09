@@ -6,8 +6,15 @@ import { FloatingHearts } from "./FloatingHearts";
 import { fadeUp, sectionViewport, staggerLines } from "./motion";
 
 export function MessageSection() {
+  const eyebrow = messageText.eyebrow ?? "a little reminder";
+  const heading = messageText.heading ?? "Even from far away, I am still with you.";
+  const safeMessageLines =
+    Array.isArray(messageLines) && messageLines.length > 0
+      ? messageLines
+      : ["I am still with you, always."];
+
   return (
-    <div className="relative flex flex-col items-center text-center">
+    <div className="relative flex w-full flex-col items-center text-center">
       <FloatingHearts />
 
       <motion.div
@@ -21,21 +28,21 @@ export function MessageSection() {
           className="mb-4 text-[0.7rem] uppercase tracking-[0.35em] text-pink-100/60"
           variants={fadeUp}
         >
-          {messageText.eyebrow}
+          {eyebrow}
         </motion.span>
 
         <motion.h2
-          className="max-w-md font-display text-4xl tracking-tight text-white sm:text-5xl"
+          className="max-w-xl text-balance font-display text-4xl tracking-tight text-white sm:text-5xl"
           variants={fadeUp}
         >
-          {messageText.heading}
+          {heading}
         </motion.h2>
 
         <div className="mt-8 w-full space-y-4">
-          {messageLines.map((line) => (
+          {safeMessageLines.map((line, index) => (
             <motion.p
-              key={line}
-              className="rounded-2xl border border-white/[0.08] bg-white/5 px-5 py-4 text-lg leading-8 text-white/[0.85] sm:text-xl"
+              key={`${line}-${index}`}
+              className="rounded-2xl border border-white/[0.08] bg-white/5 px-4 py-4 text-left text-base leading-7 text-white/[0.85] sm:px-5 sm:text-lg sm:leading-8"
               variants={fadeUp}
             >
               {line}

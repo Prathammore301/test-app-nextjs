@@ -1,0 +1,35 @@
+<svg width="800" height="1000" viewBox="0 0 800 1000" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="800" height="1000" rx="48" fill="url(#bg3)"/>
+  <circle cx="586" cy="204" r="132" fill="url(#moon3)"/>
+  <circle cx="182" cy="202" r="6" fill="#FFF7FC"/>
+  <circle cx="240" cy="144" r="5" fill="#FFE8F8"/>
+  <circle cx="278" cy="232" r="4" fill="#FFF7FC"/>
+  <circle cx="654" cy="94" r="5" fill="#FFF7FC"/>
+  <circle cx="126" cy="332" r="4" fill="#FFF7FC"/>
+  <path d="M108 760C206 684 330 646 444 654C562 662 650 720 692 784V850H108V760Z" fill="url(#ridge3)"/>
+  <path d="M120 830C212 772 316 742 412 746C512 750 610 786 682 850V916H120V830Z" fill="url(#lake3)"/>
+  <path d="M330 758C348 738 379 742 387 764C394 745 424 738 440 756C458 776 454 808 387 862C318 807 313 782 330 758Z" fill="#FFF2FB"/>
+  <rect x="176" y="522" width="448" height="210" rx="26" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.14)"/>
+  <path d="M220 664C256 620 324 594 382 600C442 607 502 642 548 700" stroke="rgba(255,255,255,0.5)" stroke-width="12" stroke-linecap="round"/>
+  <path d="M218 610H584" stroke="rgba(255,255,255,0.18)" stroke-width="10" stroke-linecap="round"/>
+  <defs>
+    <linearGradient id="bg3" x1="132" y1="44" x2="678" y2="944" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1B1636"/>
+      <stop offset="0.5" stop-color="#22102E"/>
+      <stop offset="1" stop-color="#090916"/>
+    </linearGradient>
+    <radialGradient id="moon3" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(586 204) rotate(90) scale(132)">
+      <stop stop-color="#FFEAF8" stop-opacity="0.95"/>
+      <stop offset="0.5" stop-color="#FFC8EB" stop-opacity="0.45"/>
+      <stop offset="1" stop-color="#FFC8EB" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="ridge3" x1="108" y1="654" x2="692" y2="850" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FF9FD8" stop-opacity="0.34"/>
+      <stop offset="1" stop-color="#B783FF" stop-opacity="0.22"/>
+    </linearGradient>
+    <linearGradient id="lake3" x1="120" y1="746" x2="682" y2="916" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#46315B" stop-opacity="0.9"/>
+      <stop offset="1" stop-color="#1A1425" stop-opacity="0.95"/>
+    </linearGradient>
+  </defs>
+</svg>
